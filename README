@@ -1,0 +1,31 @@
+Encryptable Extension for Doctrine 1.2x
+
+This extension automatically creates a salt column on the table and populates it with phpuid().
+
+It will then encrypt the columns as specified by the encrypted_columns attribute (see example in yml file excert below).
+
+You can extend the class Doctrine_Template_Listener_Encryptable to provide your own encrypt and decrypt functions.  Just add a listener attribute as below.
+
+Make sure that your schema.yml and your generated Models are not world readable as they contain the 'secret' in plain text.  Obviously not a perfect solution - suggestions welcome :-).
+
+Only use on string fields and make sure fields are long enough for the encrypted text.  There is no real sanity checking in the code at the moment to prevent misuse.  So thorougly test if you are putting it into production systems.
+
+I have mashed this together using the existing code from other extensions notably the Blameable and Sluggable extensions. So most of the credit goes to the authors of those extensions.  Thanks
+
+
+Example yml
+
+Credit_Card:
+  actAs:
+    Encryptable:
+	  listener: Doctrine_template_Listener_MyEncryptable 
+      encrypted_columns: [number,crc]
+      secret: "This is a secret"
+  columns:
+    id:
+      type: integer
+      primary: true
+      autoincrement: true
+    number: string(200)
+    crc: string(200)
+
