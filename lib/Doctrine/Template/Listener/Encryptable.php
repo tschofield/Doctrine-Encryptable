@@ -40,7 +40,7 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
      */
     protected $_options = array();
     
-	/**
+    /**
      * __construct
      *
      * @param string $options 
@@ -54,13 +54,13 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
     /**
      * Create and populate the salt column when a record is inserted
      * TODO Check column is a string column and is correct size for encrypted field
-	 * TODO Restrict Salt colum to 13 or 26 for uniqid
+     * TODO Restrict Salt colum to 13 or 26 for uniqid
      * @param Doctrine_Event $event
      * @return void
      */
     public function preInsert(Doctrine_Event $event)
     {
-		$record = $event->getInvoker();
+        $record = $event->getInvoker();
         if ( ! $this->_options['columns']['salt']['disabled']) {
             $saltName = $record->getTable()->getFieldName($this->_options['columns']['salt']['name']);
             $modified = $record->getModified();;
@@ -68,19 +68,19 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
                 $record->$saltName = uniqid("");
             }
         }
-	
-		if ($this->_options['encrypted_columns']){
-			$modified = $record->getModified();;
-			foreach ($this->_options['encrypted_columns'] as $column) {
-				$fieldName = $record->getTable()->getFieldName($column);
-				if (isset($modified[$fieldName])) {
-					$record->$column = $this->encrypt($record->$column,$record->$saltName);
-				}
-			}
-		}
-	}
     
-	/**
+        if ($this->_options['encrypted_columns']){
+            $modified = $record->getModified();;
+            foreach ($this->_options['encrypted_columns'] as $column) {
+                $fieldName = $record->getTable()->getFieldName($column);
+                if (isset($modified[$fieldName])) {
+                    $record->$column = $this->encrypt($record->$column,$record->$saltName);
+                }
+            }
+        }
+    }
+    
+    /**
      * Encrypts configured column(s) when a record is updated
      *
      * @param Doctrine_Event $event
@@ -88,29 +88,29 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
      */
     public function preUpdate(Doctrine_Event $event)
     {
-		$record = $event->getInvoker();
-		$saltDisabled = $this->_options['columns']['salt']['disabled'];
+        $record = $event->getInvoker();
+        $saltDisabled = $this->_options['columns']['salt']['disabled'];
         if ( ! $saltDisabled) {
-			$saltName = $record->getTable()->getFieldName($this->_options['columns']['salt']['name']);
-		}
-		foreach ($this->_options['encrypted_columns'] as $column) {
-			$record->$column = $this->encrypt($record->$column,$record->$saltName);
-		}
-	}
-	
+            $saltName = $record->getTable()->getFieldName($this->_options['columns']['salt']['name']);
+        }
+        foreach ($this->_options['encrypted_columns'] as $column) {
+            $record->$column = $this->encrypt($record->$column,$record->$saltName);
+        }
+    }
+    
     /**
      * Decrypt encryptable column(s) when a record is retreived
      *
      * @param Doctrine_Event $event
      * @return void
      */
-	public function preHydrate(Doctrine_Event $event)
+    public function preHydrate(Doctrine_Event $event)
     {
         $data = $event->data;
-		foreach ($this->_options['encrypted_columns'] as $column) {
-			$data[$column] = $this->decrypt($data[$column],$data['salt']);
-		}        
-		$event->data = $data;
+        foreach ($this->_options['encrypted_columns'] as $column) {
+            $data[$column] = $this->decrypt($data[$column],$data['salt']);
+        }        
+        $event->data = $data;
     }
 
     /**
@@ -120,14 +120,14 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
      * @param String $salt
      * @return String
      */
-	protected function encrypt($text,$salt=NULL) 
+    protected function encrypt($text,$salt=NULL) 
     { 
-		$secret = $this->_options['secret'];
-		$secureKey = hash('sha256',$salt . $secret ,TRUE);
-		$mode= MCRYPT_MODE_ECB;
-		$cipher = MCRYPT_RIJNDAEL_256;
-		$ivSize = mcrypt_get_iv_size($cipher, $mode);
-		$iv = mcrypt_create_iv($ivSize , MCRYPT_RAND);
+        $secret = $this->_options['secret'];
+        $secureKey = hash('sha256',$salt . $secret ,TRUE);
+        $mode= MCRYPT_MODE_ECB;
+        $cipher = MCRYPT_RIJNDAEL_256;
+        $ivSize = mcrypt_get_iv_size($cipher, $mode);
+        $iv = mcrypt_create_iv($ivSize , MCRYPT_RAND);
         return base64_encode(mcrypt_encrypt($cipher, $secureKey, $text, $mode, $iv)); 
     } 
 
@@ -140,12 +140,12 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
      */
     protected function decrypt($text,$salt=NULL)
     { 
-		$secret = $this->_options['secret'];
-		$secureKey = hash('sha256',$salt . $secret ,TRUE);
-		$mode= MCRYPT_MODE_ECB;
-		$cipher = MCRYPT_RIJNDAEL_256;
-		$ivSize = mcrypt_get_iv_size($cipher, $mode);
-		$iv = mcrypt_create_iv($ivSize , MCRYPT_RAND);
+        $secret = $this->_options['secret'];
+        $secureKey = hash('sha256',$salt . $secret ,TRUE);
+        $mode= MCRYPT_MODE_ECB;
+        $cipher = MCRYPT_RIJNDAEL_256;
+        $ivSize = mcrypt_get_iv_size($cipher, $mode);
+        $iv = mcrypt_create_iv($ivSize , MCRYPT_RAND);
         return trim(mcrypt_decrypt($cipher, $secureKey, base64_decode($text), $mode, $iv)); 
-    } 	
+    }     
 }

@@ -40,19 +40,19 @@ class Doctrine_Template_Encryptable extends Doctrine_Template
      *
      * @var string
      */
-    protected $_options = array('listener'      		=> 'Doctrine_Template_Listener_Encryptable',
-                                'default'       		=> false,
-                                'params'        		=> array(),
-                                'columns'      			=> array('salt' =>  array('name'          =>  'salt',
-                                                                             	  'alias'         =>  null,
+    protected $_options = array('listener'              => 'Doctrine_Template_Listener_Encryptable',
+                                'default'               => false,
+                                'params'                => array(),
+                                'columns'                  => array('salt' =>  array('name'          =>  'salt',
+                                                                                   'alias'         =>  null,
                                                                                   'type'          =>  'string',
                                                                                   'length'        =>  13,
                                                                                   'disabled'      =>  false,
                                                                                   'options'       =>  array('notnull' => true,)
-                                                                                 )	
+                                                                                 )    
                                                                 ),
-                                'encrypted_columns'		=> array(),
-                                'secret'				=> array(),
+                                'encrypted_columns'        => array(),
+                                'secret'                => array(),
                                );
     
 
@@ -69,7 +69,6 @@ class Doctrine_Template_Encryptable extends Doctrine_Template
         }
         
         parent::__construct($options);
-        
     }
     
     /**
@@ -94,7 +93,7 @@ class Doctrine_Template_Encryptable extends Doctrine_Template
         
         if (get_class($listener) !== 'Doctrine_Template_Listener_Encryptable' && 
             !is_subclass_of($listener, 'Doctrine_Template_Listener_Encryptable')) {
-            	throw new Exception('Invalid listener. Must be Doctrine_Template_Listener_Encryptable or subclass');
+                throw new Exception('Invalid listener. Must be Doctrine_Template_Listener_Encryptable or subclass');
         }
         $this->addListener($listener, 'Encryptable');
     }
