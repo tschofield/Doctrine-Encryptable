@@ -63,14 +63,14 @@ class Doctrine_Template_Listener_Encryptable extends Doctrine_Record_Listener
         $record = $event->getInvoker();
         if ( ! $this->_options['columns']['salt']['disabled']) {
             $saltName = $record->getTable()->getFieldName($this->_options['columns']['salt']['name']);
-            $modified = $record->getModified();;
+            $modified = $record->getModified();
             if ( ! isset($modified[$saltName])) {
                 $record->$saltName = uniqid("");
             }
         }
     
         if ($this->_options['encrypted_columns']){
-            $modified = $record->getModified();;
+            $modified = $record->getModified();
             foreach ($this->_options['encrypted_columns'] as $column) {
                 $fieldName = $record->getTable()->getFieldName($column);
                 if (isset($modified[$fieldName])) {
